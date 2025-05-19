@@ -1,16 +1,15 @@
-import api from "../api";
+import api from '../api';
+import type { Movie } from '@/lib/types';
 
-export const getTopRatedMovies = async () => {
-    let res: any;
-    const endpoint = 'top-rated?language=en-US';
-    await api
-        .get(endpoint)
-        .then((d) => {
-            res = d.data
-        })
-        .catch((err) =>{
-            res = err.response;
-        });
-    return res;
-
+export async function getTopRatedMovies(page = 1): Promise<Movie[]> {
+  try {
+    const { data } = await api.get<{ results: Movie[] }>('/movie/top_rated', {
+      params: { page },
+    });
+    return data.results;
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : String(error);
+    console.error('Error fetching top-rated movies:', message);
+    return [];
+  }
 }

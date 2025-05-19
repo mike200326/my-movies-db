@@ -1,16 +1,15 @@
-import api from "../api";
+import type { MovieDetail } from '@/lib/types';
+import { getMovieById } from './getMovieById';
 
-export const getFavouriteMovies = async () => {
-    let res: any;
-    const endpoint = 'my-favourites?language=en-US';
-    await api
-        .get(endpoint)
-        .then((d) => {
-            res = d.data
-        })
-        .catch((err) =>{
-            res = err.response;
-        });
-    return res;
 
+export async function getFavouriteMovies(): Promise<MovieDetail[]> {
+  if (typeof window === 'undefined') return [];
+  const saved = sessionStorage.getItem('favorites');
+  const favIds = saved ? (JSON.parse(saved) as number[]) : [];
+  const results: MovieDetail[] = [];
+  for (const id of favIds) {
+    const movie = await getMovieById(id);
+    if (movie) results.push(movie);
+  }
+  return results;
 }

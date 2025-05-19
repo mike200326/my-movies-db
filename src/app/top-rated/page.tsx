@@ -1,41 +1,24 @@
-"use client";
+// src/app/top-rated/page.tsx
+import React from 'react';
+import type { Movie } from '@/lib/types';
+import { getTopRatedMovies } from '@/services/movies/getTopRatedMovies';
+import MovieCard from '@/components/MovieCard/MovieCard';
 
-import React, { useEffect, useState } from "react";
-import { getTopRatedMovies } from "@/services/movies/getTopRatedMovies";
-
-const TopRatedClientPage = () => {
-  const [loading, setLoading] = useState(false);
-  const [movies, setMovies] = useState<any[]>([]);
-
-  useEffect(() => {
-    const fetchTopRatedMovies = async () => {
-      setLoading(true);
-      await new Promise((resolve) => setTimeout(resolve, 2000)); // simulate 2s delay
-      try {
-        const data = await getTopRatedMovies();
-        setMovies(data.results);
-      } catch (err) {
-        console.error("Error loading movies: ", err);
-      }
-      setLoading(false);
-    };
-
-    fetchTopRatedMovies();
-  }, []);
+export default async function TopRatedPage(): Promise<React.JSX.Element> {
+  const movies: Movie[] = await getTopRatedMovies();
 
   return (
-    <div>
-      <h2 className="text-xl font-bold mb-4">
-        Client-rendered Top Rated Movies
-      </h2>
-      {loading && <p className="text-sm text-muted-foreground">Cargando...</p>}
-      {movies.map((movie) => (
-        <div key={movie.id}>
-          <span>{movie.title}</span>
+    <main className="p-6">
+      <h1 className="text-2xl font-bold mb-4">Mejor Valoradas</h1>
+      {movies.length > 0 ? (
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+          {movies.map((movie) => (
+            <MovieCard key={movie.id} movie={movie} />
+          ))}
         </div>
-      ))}
-    </div>
+      ) : (
+        <p className="text-gray-500">No se encontraron películas mejor valoradas.</p>
+      )}
+    </main>
   );
-};
-
-export default TopRatedClientPage;
+}

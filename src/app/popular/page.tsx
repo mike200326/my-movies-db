@@ -1,40 +1,18 @@
 // src/app/popular/page.tsx
-"use client";
+import { getPopularMovies } from '@/services/movies/getPopularMovies';
+import MovieCard from '@/components//MovieCard/MovieCard';
+import type { Movie } from '@/lib/types'
 
-import React, { useEffect, useState } from "react";
-import { getPopularMovies } from "@/services/movies/getPopularMovies";
-
-const PopularClientPage = () => {
-  const [loading, setLoading] = useState(false);
-  const [movies, setMovies] = useState<any[]>([]);
-
-  useEffect(() => {
-    const fetchPopularMovies = async () => {
-      setLoading(true);
-      await new Promise((resolve) => setTimeout(resolve, 2000)); // simulate 2s delay
-      try {
-        const data = await getPopularMovies();
-        setMovies(data.results);
-      } catch (err) {
-        console.error("Error loading movies: ", err);
-      }
-      setLoading(false);
-    };
-
-    fetchPopularMovies();
-  }, []);
-
+export default async function PopularPage() {
+  const movies = await getPopularMovies();
   return (
-    <div>
-      <h2 className="text-xl font-bold mb-4">Client-rendered Popular Movies</h2>
-      {loading && <p className="text-sm text-muted-foreground">Cargando...</p>}
-      {movies.map((movie) => (
-        <div key={movie.id}>
-          <span>{movie.title}</span>
-        </div>
-      ))}
-    </div>
+    <main className="p-6">
+      <h1 className="text-2xl font-bold mb-4">Películas Populares</h1>
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+        {movies.map((movie: Movie) => (
+          <MovieCard key={movie.id} movie={movie} />
+        ))}
+      </div>
+    </main>
   );
-};
-
-export default PopularClientPage;
+}
