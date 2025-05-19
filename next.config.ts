@@ -1,7 +1,11 @@
+//next.config.js
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  /* config options here */
+   images: {
+    // Opción sencilla: permitir el dominio completo
+    domains: ["image.tmdb.org"],
+   },
 };
 
 export default nextConfig;
